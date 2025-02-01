@@ -10,8 +10,8 @@ import { useWishlist } from '../context/WishlistContext';
 import { RootState } from '../redux/store';
 
 // ShadCN Components
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/app/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
 
 const NavbarClient = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);

@@ -1,4 +1,4 @@
-"use client"; // Because this is an interactive component
+"use client"; // Interactive component
 
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -19,27 +19,39 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export const WishlistProvider = ({ children }: { children: React.ReactNode }) => {
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-
-  useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishlist");
-    if (storedWishlist) {
-      setWishlist(JSON.parse(storedWishlist));
+  const [wishlist, setWishlist] = useState<WishlistItem[]>(() => {
+    // ✅ Load wishlist from localStorage when initializing state
+    if (typeof window !== "undefined") {
+      const storedWishlist = localStorage.getItem("wishlist");
+      return storedWishlist ? JSON.parse(storedWishlist) : [];
     }
-  }, []);
+    return [];
+  });
 
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    if (wishlist.length > 0) {
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    }
   }, [wishlist]);
 
   const addToWishlist = (product: WishlistItem) => {
-    if (!wishlist.some((item) => item._id === product._id)) {
-      setWishlist([...wishlist, product]);
-    }
+    setWishlist((prevWishlist) => {
+      const exists = prevWishlist.some((item) => item._id === product._id);
+      if (!exists) {
+        const updatedWishlist = [...prevWishlist, product];
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Update localStorage immediately
+        return updatedWishlist;
+      }
+      return prevWishlist;
+    });
   };
 
   const removeFromWishlist = (id: string) => {
-    setWishlist(wishlist.filter((item) => item._id !== id));
+    setWishlist((prevWishlist) => {
+      const updatedWishlist = prevWishlist.filter((item) => item._id !== id);
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Update localStorage immediately
+      return updatedWishlist;
+    });
   };
 
   return (

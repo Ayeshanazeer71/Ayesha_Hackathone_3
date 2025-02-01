@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,6 +6,7 @@ import { removeFromCart, incrementQuantity, decrementQuantity } from '../redux/c
 import { FaMinus, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { RootState } from "../redux/store";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Shopping = () => {
     const cart = useSelector((state: RootState) => state.cart);
@@ -15,7 +16,7 @@ const Shopping = () => {
     const [discountCode, setDiscountCode] = useState<string>("");
 
     const shippingCost = useMemo(() => shippingOption === "Express Delivery" ? 10.00 : 5.00, [shippingOption]);
-    const subtotal = useMemo(() => cart.items.reduce((total, item) => total + item.price * item.quantity, 0), [cart.items]);
+    const subtotal = useMemo(() => cart.items.reduce((total: number, item: { price: number; quantity: number; }) => total + item.price * item.quantity, 0), [cart.items]);
     const applyDiscount = useMemo(() => discountCode === "DISCOUNT10" ? 10 : 0, [discountCode]);
     const totalAmount = useMemo(() => (subtotal + shippingCost - applyDiscount).toFixed(2), [subtotal, shippingCost, applyDiscount]);
 
@@ -31,7 +32,7 @@ const Shopping = () => {
                         <p className="text-gray-500 text-center py-10 text-lg">Your cart is empty.</p>
                     ) : (
                         <ul className="space-y-6">
-                            {cart.items.map((item) => (
+                            {cart.items.map((item:any) => (
                                 <li key={item.id} className="flex flex-col sm:flex-row items-center justify-between p-5 border rounded-xl shadow-md bg-white/90 hover:shadow-lg transition duration-300">
                                     
                                     {/* Product Image */}
@@ -46,7 +47,6 @@ const Shopping = () => {
                                     {/* Product Details */}
                                     <div className="flex-grow px-4 text-center sm:text-left">
                                         <h2 className="text-lg font-semibold">{item.name}</h2>
-                                        
                                     </div>
 
                                     {/* Quantity Buttons */}
@@ -94,7 +94,7 @@ const Shopping = () => {
                         <h2 className="text-2xl font-bold mb-6">📦 Order Summary</h2>
 
                         <div className="flex justify-between text-lg mb-4">
-                            <p className="text-gray-600">Items ({cart.totalQuantity})</p>
+                            <p className="text-gray-600">Items ({cart.items.length})</p>
                             <p className="font-semibold">${subtotal.toFixed(2)}</p>
                         </div>
 
@@ -111,18 +111,6 @@ const Shopping = () => {
                             </select>
                         </div>
 
-                        {/* Discount Code Input */}
-                        <div className="mb-5">
-                            <label className="text-gray-600 block mb-2 font-semibold">💰 Discount Code</label>
-                            <input
-                                type="text"
-                                placeholder="Enter your code"
-                                className="w-full p-3 border rounded-lg shadow-sm transition hover:border-gray-400"
-                                value={discountCode}
-                                onChange={(e) => setDiscountCode(e.target.value)}
-                            />
-                        </div>
-
                         {/* Total Price */}
                         <div className="flex justify-between font-bold text-xl mb-6">
                             <p>Total Price</p>
@@ -130,11 +118,12 @@ const Shopping = () => {
                         </div>
 
                         {/* Checkout Button */}
-                        <button 
+                        <Link
+                        href={'/checkout'}
                             className="w-full bg-black text-white py-3 rounded-lg font-medium text-lg hover:bg-gray-800 transition-transform hover:scale-105 active:scale-95 focus:ring focus:ring-gray-400"
                         >
                             ✅ Checkout
-                        </button>
+                        </Link>
                     </div>
                 )}
             </div>
